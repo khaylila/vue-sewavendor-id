@@ -1,21 +1,4 @@
-<template>
-  <!-- <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
-    <router-link to="/login">Login</router-link>
-  </nav> -->
-  <router-view />
-</template>
-
-<style>
-#app {
-  background-color: #fafdfb;
-  font-family: "Nunito", "Segoe UI", arial;
-  font-size: 14px;
-  color: var(--bs-gray-800);
-}
-
-/* .btn-purple {
+.btn-purple {
   --bs-btn-color: #fff;
   --bs-btn-bg: rgb(126 34 206);
   --bs-btn-border-color: rgb(126 34 206);
@@ -30,21 +13,20 @@
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: rgb(126 34 206);
   --bs-btn-disabled-border-color: rgb(126 34 206);
-} */
+}
 
-/* .bg-purple {
+.bg-purple {
   --bs-bg-opacity: 1;
   background-color: rgba(126, 34, 206, var(--bs-bg-opacity)) !important;
 }
 
-body {
+/* body {
   background-color: #fafdfb;
   font-family: "Nunito", "Segoe UI", arial;
   font-size: 14px;
   color: var(--bs-gray-800);
-}
+} */
 
 .color-gray-800 {
   color: var(--bs-gray-800);
-} */
-</style>
+}
