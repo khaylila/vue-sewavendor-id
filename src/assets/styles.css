@@ -20,13 +20,53 @@
   background-color: rgba(126, 34, 206, var(--bs-bg-opacity)) !important;
 }
 
-/* body {
-  background-color: #fafdfb;
-  font-family: "Nunito", "Segoe UI", arial;
-  font-size: 14px;
-  color: var(--bs-gray-800);
-} */
+.text-decoration-0 {
+  text-decoration: none;
+}
+
+.profile-picture {
+  width: 30px;
+  aspect-ratio: 1/1;
+}
 
 .color-gray-800 {
   color: var(--bs-gray-800);
+}
+
+.dropdown-item.has-icon svg {
+  margin-top: -2px;
+  text-align: center;
+}
+
+.btn svg {
+  margin-top: -4px;
+}
+
+.dropdown-menu .dropdown-title {
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: #191d21 !important;
+  padding: 10px 20px;
+  line-height: 20px;
+  color: #98a6ad;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-progress {
+  cursor: progress;
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
+  z-index: 999; /* Ensure the backdrop is above other content */
 }

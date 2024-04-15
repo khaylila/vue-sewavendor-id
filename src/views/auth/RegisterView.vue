@@ -14,34 +14,44 @@
           <div class="card shadow-sm">
             <div class="card-body">
               <h5 class="card-title">Register</h5>
-              <form>
+              <form @submit.prevent="handleSubmit">
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="mb-3">
-                      <label for="firstName" class="form-label small"
+                      <label for="firstname" class="form-label small"
                         >Nama Depan</label
                       >
                       <input
                         type="text"
                         class="form-control"
-                        id="firstName"
-                        placeholder="indah"
-                        v-model="firstName"
+                        :class="{ 'is-invalid': errors.firstname }"
+                        id="firstname"
+                        placeholder="Indah"
+                        v-model="firstname"
+                        required
                       />
+                      <div v-if="errors.firstname" class="invalid-feedback">
+                        {{ errors.firstname }}
+                      </div>
                     </div>
                   </div>
                   <div class="col-lg-6">
                     <div class="mb-3">
-                      <label for="lastName" class="form-label small"
+                      <label for="lastname" class="form-label small"
                         >Nama Belakang</label
                       >
                       <input
                         type="twxt"
                         class="form-control"
-                        id="lastName"
-                        placeholder="permata"
-                        v-model="lastName"
+                        :class="{ 'is-invalid': errors.lastname }"
+                        id="lastname"
+                        placeholder="Permata"
+                        v-model="lastname"
+                        required
                       />
+                      <div v-if="errors.lastname" class="invalid-feedback">
+                        {{ errors.lastname }}
+                      </div>
                     </div>
                   </div>
                   <div class="col-lg-6">
@@ -52,28 +62,36 @@
                       <input
                         type="email"
                         class="form-control"
+                        :class="{ 'is-invalid': errors.email }"
                         id="email"
                         placeholder="mail@example.com"
                         v-model="email"
+                        required
                       />
+                      <div v-if="errors.email" class="invalid-feedback">
+                        {{ errors.email }}
+                      </div>
                     </div>
                   </div>
                   <div class="col-lg-6">
                     <div class="mb-3">
-                      <label for="phoneNumber" class="form-label small"
+                      <label for="phonenumber" class="form-label small"
                         >Nomor Telepon</label
                       >
-                      <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1"
-                          >+62</span
-                        >
+                      <div class="input-group has-validation mb-3">
+                        <span class="input-group-text">+62</span>
                         <input
                           type="number"
                           class="form-control"
-                          id="phoneNumber"
+                          :class="{ 'is-invalid': errors.phonenumber }"
+                          id="phonenumber"
                           placeholder="86738847583"
-                          v-model="phoneNumber"
+                          v-model="phonenumber"
+                          required
                         />
+                        <div v-if="errors.phonenumber" class="invalid-feedback">
+                          {{ errors.phonenumber }}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -85,10 +103,15 @@
                       <input
                         type="password"
                         class="form-control"
+                        :class="{ 'is-invalid': errors.password }"
                         id="password"
                         placeholder="Masukkan password"
                         v-model="password"
+                        required
                       />
+                      <div v-if="errors.password" class="invalid-feedback">
+                        {{ errors.password }}
+                      </div>
                     </div>
                   </div>
                   <div class="col-lg-6">
@@ -99,10 +122,18 @@
                       <input
                         type="password"
                         class="form-control"
-                        id="confirmPassword"
+                        :class="{ 'is-invalid': errors.confirmpassword }"
+                        id="confirmpassword"
                         placeholder="Masukkan ulang password"
-                        v-model="confirmPassword"
+                        v-model="confirmpassword"
+                        required
                       />
+                      <div
+                        v-if="errors.confirmpassword"
+                        class="invalid-feedback"
+                      >
+                        {{ errors.confirmpassword }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -110,22 +141,44 @@
                   <input
                     type="checkbox"
                     class="form-check-input"
+                    :class="{ 'is-invalid': errors.agree }"
                     id="agree"
                     v-model="agree"
+                    required
                   />
                   <label class="form-check-label small" for="agree"
                     >Saya setuju dengan
-                    <a href="./terms-codition">syarat dan ketentuan</a></label
+                    <router-link :to="{ name: 'term' }"
+                      >syarat dan ketentuan</router-link
+                    ></label
                   >
+                  <div v-if="errors.agree" class="invalid-feedback">
+                    {{ errors.agree }}
+                  </div>
                 </div>
-                <button type="submit" class="btn btn-purple w-100">
+                <button
+                  v-if="isSubmit"
+                  type="submit"
+                  class="btn btn-purple w-100"
+                >
                   Register
+                </button>
+                <button
+                  v-else
+                  type="submit"
+                  class="btn btn-purple w-100"
+                  disabled
+                >
+                  <div class="spinner-border text-white" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
                 </button>
               </form>
             </div>
           </div>
           <p class="text-center small mt-3">
-            Sudah punya akun? <a href="./login">Masuk!</a>
+            Sudah punya akun?
+            <router-link :to="{ name: 'login' }">Masuk</router-link>
           </p>
         </div>
       </div>
@@ -137,24 +190,98 @@
 </template>
 
 <script>
+import {
+  fetchData,
+  showAlert,
+  showAlertWithConfirm,
+} from "../../peripherals/Utils.js";
+import { REGISTER } from "../../peripherals/Constans.js";
+
 export default {
   name: "RegisterView",
   data() {
     return {
-      firstName: "",
-      lastName: "",
+      firstname: "",
+      lastname: "",
       email: "",
-      phoneNumber: "",
+      phonenumber: "",
       password: "",
-      confirmPassword: "",
+      confirmpassword: "",
       agree: false,
+      isSubmit: false,
+      errors: {
+        firstname: null,
+        lastname: null,
+        email: null,
+        phonenumber: null,
+        password: null,
+        confirmpassword: null,
+        agree: null,
+      },
     };
   },
   methods: {
     handleSubmit() {
-      console.log(this.email);
-      console.log(this.password);
-      console.log(this.remember);
+      this.isSubmit = !this.isSubmit;
+      this.errors = {
+        firstname: null,
+        lastname: null,
+        email: null,
+        phonenumber: null,
+        password: null,
+        confirmpassword: null,
+      };
+
+      const data = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          firstname: this.firstname,
+          lastname: this.lastname,
+          email: this.email,
+          phonenumber: this.phonenumber,
+          password: this.password,
+          repeatpassword: this.confirmpassword,
+          agree: this.agree,
+        },
+        method: "POST",
+      };
+
+      fetchData(
+        REGISTER,
+        data,
+        (result) => {
+          console.log(result);
+          if (result.code == "400") {
+            this.errors = result.errors;
+          } else if (result.code == "401" || result.code == "500") {
+            this.showAlert({
+              text: result.error.message,
+            });
+          } else {
+            showAlertWithConfirm(
+              {
+                title: "Success!",
+                text: result.data.message,
+                icon: "success",
+                allowOutsideClick: false,
+              },
+              (rst) => {
+                if (rst.isConfirmed) {
+                  this.$router.push("/");
+                }
+              }
+            );
+          }
+        },
+        (error) => {
+          showAlert();
+        },
+        () => {
+          this.isSubmit = !this.isSubmit;
+        }
+      );
     },
   },
 };
