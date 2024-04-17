@@ -157,7 +157,7 @@
                   </div>
                 </div>
                 <button
-                  v-if="isSubmit"
+                  v-if="!isSubmit"
                   type="submit"
                   class="btn btn-purple w-100"
                 >
@@ -222,7 +222,7 @@ export default {
   },
   methods: {
     handleSubmit() {
-      this.isSubmit = !this.isSubmit;
+      this.isSubmit = true;
       this.errors = {
         firstname: null,
         lastname: null,
@@ -260,6 +260,14 @@ export default {
               text: result.error.message,
             });
           } else {
+            this.firstname = "";
+            this.lastname = "";
+            this.email = "";
+            this.phonenumber = "";
+            this.password = "";
+            this.confirmpassword = "";
+            this.agree = false;
+
             showAlertWithConfirm(
               {
                 title: "Success!",
@@ -279,7 +287,7 @@ export default {
           showAlert();
         },
         () => {
-          this.isSubmit = !this.isSubmit;
+          this.isSubmit = false;
         }
       );
     },

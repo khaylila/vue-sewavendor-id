@@ -7,6 +7,8 @@ import TermView from "../views/auth/TermView.vue";
 import MerchantView from "../views/merchant/MerchantView.vue";
 import ItemsView from "../views/item/ItemsView.vue";
 import ItemsDetail from "../views/item/ItemsDetail.vue";
+import StoreView from "../views/store/StoreView.vue";
+import StoreDetail from "../views/store/StoreDetail.vue";
 import Cookies from "js-cookie";
 
 const routes = [
@@ -114,6 +116,30 @@ const routes = [
     //   // next("/login"); // Misalnya, redirect ke halaman login setelah logout
     // },
   },
+  {
+    path: "/store",
+    name: "store",
+    component: StoreView,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/:merchant",
+    name: "merchant-detail",
+    component: StoreDetail,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/:merchant/:itemSlug",
+    name: "store-detail",
+    component: StoreDetail,
+    meta: {
+      requiresAuth: false,
+    },
+  },
 ];
 
 const router = createRouter({
@@ -126,46 +152,33 @@ router.beforeEach((to, from, next) => {
   // Check if the route requires authentication
   if (to.meta.requiresAuth) {
     // Check if the user is logged in
-    const token = Cookies.get("Authorization");
-    if (token != null) {
-      next();
+    if (sessionStorage.getItem("role") == "customer") {
+      if (to.name == "home") {
+        next("store");
+      } else {
+        next();
+      }
     } else {
-      next("/login");
-    }
-    // if (token != null) {
-    //   fetch("http://localhost:3000/login/check", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //     body: JSON.stringify({}),
-    //   })
-    //     .then((response) => {
-    //       return response.json();
-    //     })
-    //     .then((result) => {
-    //       if (result.status != 200) {
-    //         next("/login");
-    //       } else {
-    //         next();
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       next("/login");
-    //     });
-    // } else {
-    //   next("/login");
-    // }
-  } else if (!to.meta.alreadyLogin) {
-    if (Cookies.get("Authorization") != null) {
-      next("/");
-    } else {
-      next();
+      const token = Cookies.get("Authorization");
+      if (token != null) {
+        next();
+      } else {
+        next("/login");
+      }
     }
   } else {
-    next(); // Proceed to the next hook
+    if (
+      Cookies.get("Authorization") == null ||
+      sessionStorage.getItem("role") == "customer"
+    ) {
+      if (to.name == "home") {
+        next("store");
+      } else {
+        next();
+      }
+    }
   }
+  next();
 });
 
 export default router;

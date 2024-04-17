@@ -7,11 +7,15 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "@vueuse/components": "^10.9.0",
+    "@vueuse/core": "^10.9.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "core-js": "^3.8.3",
     "js-cookie": "^3.0.5",
     "sweetalert2": "^11.10.7",
+    "v-calendar": "^3.1.2",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
   },

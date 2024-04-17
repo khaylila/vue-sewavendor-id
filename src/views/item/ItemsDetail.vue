@@ -91,6 +91,7 @@
                   <div class="col-12 mb-3 d-flex justify-content-center">
                     <img
                       :src="preview"
+                      class="img-thumbnail"
                       alt="Preview Item"
                       loading="lazy"
                       style="max-width: 100%"
@@ -103,7 +104,7 @@
                         class="form-control form-control-lg"
                         id="itemName"
                         placeholder="Nama item"
-                        v-model="item.name"
+                        v-model="itemValue.name"
                         readonly
                       />
                       <label for="itemName">Nama Item</label>
@@ -116,7 +117,7 @@
                         class="form-control form-control-lg"
                         id="itemQty"
                         placeholder="Qty item"
-                        v-model="item.qty"
+                        v-model="itemValue.qty"
                         readonly
                       />
                       <label for="itemQty">Qty</label>
@@ -131,7 +132,7 @@
                           class="form-control form-control-lg"
                           id="itemPrice"
                           placeholder="Harga item"
-                          v-model="item.price"
+                          v-model="itemValue.price"
                           readonly
                         />
                         <label for="itemPrice">Harga Jual</label>
@@ -145,17 +146,21 @@
                         placeholder="Sebuah deskripsi singkat"
                         id="floatingTextarea"
                         rows="15"
-                        style="height: 100%"
-                        v-model="item.description"
+                        style="height: 100%; resize: none"
+                        v-model="itemValue.description"
                       ></textarea>
                       <label for="floatingTextarea">Deskripsi</label>
                     </div>
                   </div>
                 </div>
-
-                <div class="row justify-content-end">
-                  <div class="col-md-5">
-                    <button type="button" class="btn btn-outline-warning w-100">
+                <!-- button -->
+                <div class="row justify-content-between">
+                  <div class="col-md-5" :class="{ 'd-none': deleteItemSubmit }">
+                    <button
+                      type="button"
+                      class="btn btn-outline-warning w-100"
+                      @click="handleEditItem"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -171,8 +176,18 @@
                       Ubah
                     </button>
                   </div>
-                  <div class="col-md-5">
-                    <button type="button" class="btn btn-outline-danger w-100">
+                  <div
+                    :class="{
+                      'col-md-5': !deleteItemSubmit,
+                      'col-12': deleteItemSubmit,
+                    }"
+                  >
+                    <button
+                      v-if="!deleteItemSubmit"
+                      type="button"
+                      class="btn btn-outline-danger w-100"
+                      @click="handleDeleteItem"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -190,6 +205,16 @@
                       </svg>
                       Hapus
                     </button>
+                    <button
+                      v-else
+                      type="button"
+                      class="btn btn-outline-danger w-100"
+                      disabled
+                    >
+                      <div class="spinner-border text-danger" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -200,11 +225,158 @@
     </section>
     <Footer />
   </div>
+
+  <template v-if="editItemModal">
+    <ModalBS
+      title="Ubah Merchant Item"
+      @close="updateModalItemClose"
+      ref="modalUpdateItemRef"
+      :useBtnClose="true"
+      :isForm="true"
+    >
+      <template v-slot:body>
+        <div class="row">
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="nameItem" class="form-label">Nama Item</label>
+              <input
+                type="text"
+                class="form-control"
+                :class="{ 'is-invalid': itemErrors.name }"
+                placeholder="Nama Item"
+                id="nameItem"
+                v-model="itemValue.name"
+              />
+              <div v-if="itemErrors.name" class="invalid-feedback">
+                {{ itemErrors.name }}
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="description" class="form-label">Deskripsi</label>
+              <textarea
+                class="form-control"
+                :class="{ 'is-invalid': itemErrors.description }"
+                id="description"
+                rows="3"
+                style="resize: none"
+                v-model="itemValue.description"
+              ></textarea>
+              <div v-if="itemErrors.description" class="invalid-feedback">
+                {{ itemErrors.description }}
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="mb-3">
+              <label for="itemQty" class="form-label">Qty</label>
+              <input
+                type="number"
+                class="form-control"
+                :class="{ 'is-invalid': itemErrors.qty }"
+                id="itemQty"
+                placeholder="Qty"
+                v-model="itemValue.qty"
+              />
+              <div v-if="itemErrors.qty" class="invalid-feedback">
+                {{ itemErrors.qty }}
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div class="mb-3">
+              <label for="inputPrice" class="form-label">Harga Jual</label>
+              <div class="input-group mb-3">
+                <span class="input-group-text">Rp</span>
+                <input
+                  id="inputPrice"
+                  type="number"
+                  class="form-control"
+                  :class="{ 'is-invalid': itemErrors.price }"
+                  v-model="itemValue.price"
+                />
+                <div v-if="itemErrors.price" class="invalid-feedback">
+                  {{ itemErrors.price }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="formFile" class="form-label">Preview Item</label>
+              <input
+                class="form-control"
+                :class="{ 'is-invalid': itemErrors.images }"
+                type="file"
+                id="formFile"
+                @change="handlePreviewItemUpload($event)"
+                multiple
+              />
+              <div v-if="itemErrors.images" class="invalid-feedback">
+                {{ itemErrors.images }}
+              </div>
+              <div v-else>
+                <div class="form-text">
+                  Mengupload gambar akan menimpa seluruh gambar yang ada.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="row justify-content-center">
+              <template v-if="previews.length > 0">
+                <template v-for="(image, index) in previews" :key="index">
+                  <div class="col-sm-6 col-md-4 mb-3">
+                    <img
+                      :src="image"
+                      class="img-thumbnail"
+                      alt="Item Preview"
+                    />
+                  </div>
+                </template>
+              </template>
+              <template v-else>
+                <template
+                  v-for="(image, index) in itemValue.images"
+                  :key="index"
+                >
+                  <div class="col-sm-6 col-md-4 mb-3">
+                    <img
+                      :src="image.title"
+                      class="img-thumbnail"
+                      alt="Item Preview"
+                    />
+                  </div>
+                </template>
+              </template>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <button
+          v-if="!editItemSubmit"
+          type="submit"
+          class="btn btn-purple"
+          @click="handleEditItemSubmit"
+        >
+          Update
+        </button>
+        <button v-else type="button" class="btn btn-purple" disabled>
+          <div class="spinner-border text-white" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </template>
+    </ModalBS>
+  </template>
 </template>
 
 <script>
 import Navbar from "../../components/Navbar.vue";
 import Footer from "../../components/Footer.vue";
+import ModalBS from "../../components/Modal.vue";
 import {
   fetchData,
   showAlert,
@@ -215,11 +387,16 @@ import PageHeader from "../../components/PageHeader.vue";
 import { AUTHORIZATION, MERCHANT_ITEMS } from "../../peripherals/Constans";
 export default {
   name: "ItemDetail",
-  components: { Navbar, PageHeader, Footer },
+  components: { Navbar, PageHeader, Footer, ModalBS },
   data() {
     return {
       preview: "../../assets/logo.png",
-      item: {},
+      previews: [],
+      itemValue: {},
+      itemErrors: {},
+      editItemSubmit: false,
+      editItemModal: false,
+      deleteItemSubmit: false,
       breadcrumb: [
         {
           name: "Items",
@@ -235,6 +412,10 @@ export default {
     };
   },
   methods: {
+    updateModalItemClose() {
+      this.editItemModal = false;
+      this.fetchMerchant();
+    },
     fetchMerchant() {
       const data = {
         headers: {
@@ -252,9 +433,9 @@ export default {
               text: result.error.message,
             });
           } else {
-            this.item = result.data;
-            this.item.CreatedAt = formatDate(result.data.CreatedAt);
-            this.item.UpdatedAt = formatDate(result.data.UpdatedAt);
+            this.itemValue = result.data;
+            this.itemValue.CreatedAt = formatDate(result.data.CreatedAt);
+            this.itemValue.UpdatedAt = formatDate(result.data.UpdatedAt);
             this.preview = result.data.images[0].title;
           }
         },
@@ -264,6 +445,135 @@ export default {
           });
         },
         () => {}
+      );
+    },
+    handleEditItem() {
+      this.editItemModal = !this.editItemModal;
+    },
+    handleDeleteItem() {
+      showAlertWithConfirm(
+        {
+          title: "Hapus Item " + this.itemValue.name + "?",
+          text: null,
+          icon: "warning",
+          allowOutsideClick: false,
+          showCancelButton: true,
+          confirmButtonText: "Ya, hapus",
+        },
+        (rst) => {
+          if (rst.isConfirmed) {
+            this.deleteItemSubmit = true;
+            fetchData(
+              MERCHANT_ITEMS + "/" + this.$route.params.id,
+              {
+                headers: {
+                  Authorization: AUTHORIZATION,
+                },
+                method: "DELETE",
+              },
+              (result) => {
+                console.log(result);
+                if (result.code != 200) {
+                  showAlert({
+                    text: result.error.message,
+                  });
+                } else {
+                  showAlertWithConfirm(
+                    {
+                      title: "Success!",
+                      text: result.data.message,
+                      icon: "success",
+                      allowOutsideClick: false,
+                    },
+                    (rst) => {
+                      if (rst.isConfirmed) {
+                        this.$router.push({
+                          name: "items",
+                        });
+                      }
+                    }
+                  );
+                }
+              },
+              (errors) => {
+                showAlert({
+                  text: errors,
+                });
+              },
+              () => {
+                this.deleteItemSubmit = true;
+              }
+            );
+          }
+        }
+      );
+    },
+    handlePreviewItemUpload(e) {
+      let count = e.target.files.length;
+      let index = 0;
+      if (e.target.files) {
+        while (count--) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.previews.push(e.target.result);
+          };
+          this.itemValue.images.push(e.target.files[index]);
+          reader.readAsDataURL(e.target.files[index]);
+          index++;
+        }
+      } else {
+        this.previews = [];
+        this.itemValue.images = [];
+      }
+    },
+    handleEditItemSubmit() {
+      this.editItemSubmit = true;
+
+      const formData = new FormData();
+      formData.append("id", this.$route.params.id);
+      formData.append("name", this.itemValue.name);
+      formData.append("description", this.itemValue.description);
+      formData.append("qty", this.itemValue.qty);
+      formData.append("price", this.itemValue.price);
+      for (let index = 0; index < this.itemValue.images.length; index++) {
+        formData.append("images", this.itemValue.images[index]);
+      }
+
+      fetchData(
+        MERCHANT_ITEMS,
+        {
+          headers: {
+            Authorization: AUTHORIZATION,
+          },
+          body: formData,
+          method: "PUT",
+          type: "formData",
+        },
+        (result) => {
+          console.log(result);
+          if (result.code != 200) {
+            showAlert({
+              text: result.error.message,
+            });
+          } else {
+            this.$refs.modalUpdateItemRef.hideModal();
+            this.editItemModal = false;
+            this.fetchMerchant();
+            showAlertWithConfirm({
+              title: "Success!",
+              text: result.data.message,
+              icon: "success",
+            });
+          }
+        },
+        (errors) => {
+          showAlert({
+            text: errors,
+          });
+        },
+        () => {
+          this.editItemSubmit = false;
+        }
       );
     },
   },

@@ -1,9 +1,4 @@
 <template>
-  <!-- <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
-    <router-link to="/login">Login</router-link>
-  </nav> -->
   <router-view />
 </template>
 
@@ -14,37 +9,4 @@
   font-size: 14px;
   color: var(--bs-gray-800);
 }
-
-/* .btn-purple {
-  --bs-btn-color: #fff;
-  --bs-btn-bg: rgb(126 34 206);
-  --bs-btn-border-color: rgb(126 34 206);
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: rgb(107 33 168);
-  --bs-btn-hover-border-color: rgb(88 28 135);
-  --bs-btn-focus-shadow-rgb: 246, 122, 88;
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: rgb(88 28 135);
-  --bs-btn-active-border-color: rgb(59 7 100);
-  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: rgb(126 34 206);
-  --bs-btn-disabled-border-color: rgb(126 34 206);
-} */
-
-/* .bg-purple {
-  --bs-bg-opacity: 1;
-  background-color: rgba(126, 34, 206, var(--bs-bg-opacity)) !important;
-}
-
-body {
-  background-color: #fafdfb;
-  font-family: "Nunito", "Segoe UI", arial;
-  font-size: 14px;
-  color: var(--bs-gray-800);
-}
-
-.color-gray-800 {
-  color: var(--bs-gray-800);
-} */
 </style>

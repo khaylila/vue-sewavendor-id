@@ -115,7 +115,9 @@
                         }}
                       </td>
                       <td class="align-middle">{{ merchant.name }}</td>
-                      <td class="align-middle">{{ merchant.phone_number }}</td>
+                      <td class="align-middle">
+                        62{{ merchant.phone_number }}
+                      </td>
                       <td class="align-middle">{{ merchant.address }}</td>
                       <td class="align-middle">
                         {{
@@ -268,7 +270,12 @@
         </div>
       </template>
       <template v-slot:footer>
-        <button v-if="!addMerchantSubmit" type="submit" class="btn btn-purple">
+        <button
+          v-if="!addMerchantSubmit"
+          type="submit"
+          @click="handleAddMerchant"
+          class="btn btn-purple"
+        >
           Tambah
         </button>
         <button v-else type="submit" class="btn btn-purple" disabled>
@@ -410,6 +417,15 @@ export default {
               text: result.error.message,
             });
           } else {
+            this.fetchMerchant();
+            this.newMerchant = {
+              firstName: "",
+              lastName: "",
+              email: "",
+              phoneNumber: "",
+              merchantName: "",
+              address: "",
+            };
             showAlertWithConfirm(
               {
                 title: "Success!",

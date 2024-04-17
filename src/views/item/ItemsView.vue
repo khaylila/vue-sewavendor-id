@@ -87,9 +87,12 @@
                       </td>
                     </tr>
                     <tr
+                      :class="{ 'cursor-pointer': cursor == 'pointer' }"
                       v-for="(item, index) in items"
                       :key="item.ID"
                       @click="handleItemClick(item.ID)"
+                      @mouseenter="setCursorPointer"
+                      @mouseleave="setCursorDefault"
                     >
                       <td class="align-middle text-center">
                         {{
@@ -280,6 +283,7 @@ export default {
   components: { Navbar, PageHeader, Pagination, ModalBS, Footer },
   data() {
     return {
+      cursor: "default",
       search: "",
       filter: "name",
       isLoading: true,
@@ -318,6 +322,12 @@ export default {
     };
   },
   methods: {
+    setCursorPointer() {
+      this.cursor = "pointer";
+    },
+    setCursorDefault() {
+      this.cursor = "default";
+    },
     toggleModalAddItem() {
       this.addItemModal = !this.addItemModal;
     },
@@ -429,6 +439,14 @@ export default {
           } else {
             this.$refs.modalAddItemRef.hideModal();
             this.fetchItems();
+            this.newItemValue = {
+              name: "",
+              description: "",
+              qty: 0,
+              price: 0,
+            };
+            this.previews = [];
+            this.images = [];
             showAlertWithConfirm({
               title: "Success!",
               text: result.data.message,
