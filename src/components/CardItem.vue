@@ -21,13 +21,22 @@
 <script>
 export default {
   name: "CardItem",
-  props: ["item"],
+  props: ["item", "reload"],
   methods: {
     handleItemClick(item) {
-      this.$router.push({
-        name: "store-detail",
-        params: { merchant: item.merchant.slug, itemSlug: item.slug },
-      });
+      if (this.reload == true) {
+        this.$router
+          .push({
+            name: "store-detail",
+            params: { merchant: item.merchant.slug, itemSlug: item.slug },
+          })
+          .then(() => this.$router.go(0));
+      } else {
+        this.$router.push({
+          name: "store-detail",
+          params: { merchant: item.merchant.slug, itemSlug: item.slug },
+        });
+      }
     },
   },
 };

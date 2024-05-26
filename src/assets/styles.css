@@ -81,3 +81,10 @@
 .hover-items:hover {
   cursor: pointer;
 }
+
+.loading-spinner {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 100vh;
+}

@@ -158,9 +158,7 @@ export default {
                 expires: 30,
               });
             }
-            this.$router.push("/").then(() => {
-              window.location.reload();
-            });
+            this.$router.push("/").then(() => this.$router.go(0));
           }
         },
         (error) => {

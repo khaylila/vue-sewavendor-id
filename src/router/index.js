@@ -9,6 +9,11 @@ import ItemsView from "../views/item/ItemsView.vue";
 import ItemsDetail from "../views/item/ItemsDetail.vue";
 import StoreView from "../views/store/StoreView.vue";
 import StoreDetail from "../views/store/StoreDetail.vue";
+import MerchantPage from "../views/store/MerchantPage";
+import ProjectList from "../views/project/ProjectList";
+import ProjectMerchantList from "../views/project/ProjectMerchantList";
+import ProjectMerchantDetail from "../views/project/ProjectMerchantDetail";
+import ProjectDetail from "../views/project/ProjectDetail";
 import Cookies from "js-cookie";
 
 const routes = [
@@ -125,9 +130,41 @@ const routes = [
     },
   },
   {
+    path: "/project",
+    name: "project",
+    component: ProjectList,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/merchant/project",
+    name: "merchant-project",
+    component: ProjectMerchantList,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/project/:id",
+    name: "project-detail",
+    component: ProjectDetail,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/merchant/project/:id",
+    name: "merchant-project-detail",
+    component: ProjectMerchantDetail,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
     path: "/:merchant",
     name: "merchant-detail",
-    component: StoreDetail,
+    component: MerchantPage,
     meta: {
       requiresAuth: false,
     },
@@ -162,8 +199,10 @@ router.beforeEach((to, from, next) => {
       const token = Cookies.get("Authorization");
       if (token != null) {
         next();
+      } else if (to.name == "home") {
+        next("store");
       } else {
-        next("/login");
+        next("login");
       }
     }
   } else {
@@ -172,13 +211,12 @@ router.beforeEach((to, from, next) => {
       sessionStorage.getItem("role") == "customer"
     ) {
       if (to.name == "home") {
-        next("store");
+        next("/store");
       } else {
         next();
       }
     }
   }
-  next();
 });
 
 export default router;
